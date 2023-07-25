@@ -23,6 +23,7 @@ protected:
 public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	FORCEINLINE TArray<AItem*> GetItemArray()const { return ItemArray; }
 	void InitKnapsack();
 	void AddItem(AItem* NewItem);
 	void RemoveItem(int32 Index, int32 Number);

@@ -3,7 +3,6 @@
 
 #include "HUD/SlashOverlay.h"
 #include "Components/ProgressBar.h"
-
 void USlashOverlay::SetHealthPercent(float Percent)
 {
 	if (HealthProgressBar)

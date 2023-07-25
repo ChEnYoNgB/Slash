@@ -17,6 +17,7 @@ class AWeapon;
 class USlashOverlay;
 class ASoul;
 class UKnapsackComponent;
+class ASlashHUD;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
@@ -46,6 +47,8 @@ private:
 	ECharacterState CharacterState;
 
 	UPROPERTY(VisibleAnywhere)
+		ASlashHUD* SlashHUD;
+	UPROPERTY(VisibleAnywhere)
 		AItem* NewItem = nullptr;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 		EDeadPose DeadPose;
@@ -73,7 +76,7 @@ private:
 	void EKeyPressed();
 	void Text();
 	void ResetAttack();
-
+	void OpenKnapsack();
 
 protected:
 
@@ -89,6 +92,7 @@ protected:
 	virtual void AttackEnd()override;
 	void PlayEquipMontage(FName SectionName);
 	void PlayDodgeMontage();
+
 
 	UFUNCTION(BlueprintCallable)
 		void DodgeEnd();

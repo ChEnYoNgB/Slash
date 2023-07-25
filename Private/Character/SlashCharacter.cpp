@@ -16,8 +16,10 @@
 #include "TimerManager.h"
 #include "HUD/SlashHUD.h"
 #include "HUD/SlashOverlay.h"
+#include "HUD/KnapsackWidget.h"
 #include "Interfaces/PickupItemInterface.h"
 #include "UObject/UObjectGlobals.h"
+
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -63,7 +65,7 @@ void ASlashCharacter::BeginPlay()
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
-		ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
+		SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD());
 		if (SlashHUD)
 		{
 			SlashOverlay = SlashHUD->GetSlashOverlay();
@@ -93,6 +95,8 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ASlashCharacter::EKeyPressed);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ASlashCharacter::Attack);
 	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &ASlashCharacter::Dodge);
+	PlayerInputComponent->BindAction("OpenKnapsack", IE_Pressed, this, &ASlashCharacter::OpenKnapsack);
+
 }
 void ASlashCharacter::Jump()
 {
@@ -155,6 +159,7 @@ void ASlashCharacter::LookUp(float Value)
 }
 void ASlashCharacter::EKeyPressed()
 {
+
 	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
 	if (OverlappingWeapon)
 	{
@@ -164,6 +169,7 @@ void ASlashCharacter::EKeyPressed()
 	}
 	else
 	{
+
 		if (CharacterState != ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied && EquipMontage)
 		{
 			PlayEquipMontage(FName("Unequip"));
@@ -185,6 +191,7 @@ void ASlashCharacter::EKeyPressed()
 		{
 			NewItem = DuplicateObject<AItem>(OverlappingItem, NewItem);
 			KnapsackComponent->AddItem(NewItem);
+			SlashHUD->GetSlashKnapsack()->UpdateList();
 			PickupItem->PickUp();
 			NewItem = nullptr;
 		}
@@ -195,10 +202,6 @@ void ASlashCharacter::Attack()
 
 	if (CanAttack())
 	{
-		if (KnapsackComponent)
-		{
-			KnapsackComponent->RemoveItem(0, 1);
-		}
 		if (AttackTimer.IsValid())
 		{
 			GetWorldTimerManager().ClearTimer(AttackTimer);
@@ -340,4 +343,38 @@ void ASlashCharacter::AddSouls(ASoul* Soul)
 void ASlashCharacter::SetOverlappingItem(AItem* Item)
 {
 	OverlappingItem = Item;
+}
+void ASlashCharacter::OpenKnapsack()
+{
+	if (SlashHUD)
+	{
+		bool Select = SlashHUD->GetKnapsackVisibility();
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		UWorld* World = GetWorld();
+		if (!Select)
+		{
+			if (PlayerController && World)
+			{
+				PlayerController->SetPause(true);
+
+				World->GetWorldSettings()->SetTimeDilation(0.f);
+
+				PlayerController->bShowMouseCursor = true;
+				PlayerController->bEnableMouseOverEvents = true;
+			}
+		}
+		else
+		{
+			if (PlayerController && World)
+			{
+				World->GetWorldSettings()->SetTimeDilation(1.f);
+				PlayerController->bShowMouseCursor = false;
+				PlayerController->bEnableMouseOverEvents = false;
+			}
+
+		}
+		SlashHUD->SetKnapsackVisibility(!Select);
+
+
+	}
 }

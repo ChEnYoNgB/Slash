@@ -18,8 +18,15 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Slash)
 		TSubclassOf<class USlashOverlay> SlashOverlayClass;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = Slash)
 		USlashOverlay* SlashOverlay;
+	UPROPERTY(EditDefaultsOnly, Category = Slash)
+		TSubclassOf<class UKnapsackWidget> SlashKnapsackClass;
+	UPROPERTY(VisibleAnywhere, Category = Slash)
+		UKnapsackWidget* SlashKnapsack;
 public:
 	FORCEINLINE USlashOverlay* GetSlashOverlay()const { return SlashOverlay; }
+	FORCEINLINE UKnapsackWidget* GetSlashKnapsack()const { return SlashKnapsack; }
+	void SetKnapsackVisibility(bool Visbility);
+	bool GetKnapsackVisibility();
 };

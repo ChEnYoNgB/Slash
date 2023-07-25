@@ -56,6 +56,7 @@ public:
 	FORCEINLINE void SetItemNumber(const int32 Number) { ItemNumber = Number; }
 	FORCEINLINE void SetItemName(const FName Name) { ItemName = Name; }
 	FORCEINLINE UTexture2D* GetItemTexture()const { return ItemTexture; }
+	FORCEINLINE void SetItemTexture(UTexture2D* Tex) { ItemTexture = Tex; }
 	FORCEINLINE bool GetbIsStack()const { return bIsStack; }
 	FORCEINLINE FName GetItemName()const { return ItemName; }
 
@@ -72,5 +73,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = Attribute)
 		int32 ItemNumber = 0;
 	UPROPERTY(EditAnywhere, Category = Attribute)
-		UTexture2D* ItemTexture;
+		UTexture2D* ItemTexture = nullptr;
 };

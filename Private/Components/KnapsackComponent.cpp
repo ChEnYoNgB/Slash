@@ -14,6 +14,7 @@ UKnapsackComponent::UKnapsackComponent()
 
 	EmetyItem = CreateDefaultSubobject<AItem>(TEXT("Empty"));
 	EmetyItem->SetItemName(FName(TEXT("EmptyItem")));
+	EmetyItem->SetItemTexture(nullptr);
 }
 
 
@@ -55,7 +56,28 @@ void UKnapsackComponent::AddItem(AItem* NewItem)
 	if (NewItem->GetbIsStack())
 	{
 		int32 FindResult = -1;
-		FindResult = ItemArray.Find(NewItem);
+		FName ItemName = NewItem->GetItemName();
+		AItem** FindArray = ItemArray.FindByPredicate([ItemName](const AItem* Element) { return Element->GetItemName() == ItemName; });
+		if (FindArray == nullptr)
+		{
+			int32 EmptyIndex = ItemArray.Find(EmetyItem);
+			if (EmptyIndex == -1)
+			{
+				bIsFull = true;
+				UE_LOG(LogTemp, Warning, TEXT("Full"));
+			}
+			else
+			{
+				ItemArray[EmptyIndex] = NewItem;
+				ItemArray[EmptyIndex]->SetItemNumber(ItemArray[EmptyIndex]->GetItemNumber() + 1);
+			}
+		}
+		else
+		{
+			FindArray[0]->SetItemNumber(FindArray[0]->GetItemNumber() + 1);
+		}
+		//FindResult = ItemArray.Find(NewItem);
+		/*
 		if (FindResult == -1)
 		{
 			int32 EmptyIndex = ItemArray.Find(EmetyItem);
@@ -75,6 +97,7 @@ void UKnapsackComponent::AddItem(AItem* NewItem)
 		{
 			ItemArray[FindResult]->SetItemNumber(ItemArray[FindResult]->GetItemNumber() + 1);
 		}
+		*/
 	}
 	else
 	{
