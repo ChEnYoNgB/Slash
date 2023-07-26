@@ -18,6 +18,7 @@ class SLASH_API USlashItemSlot : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativePreConstruct()override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)override;
 	void SetItemTexture(UTexture2D* Texture);
 	void SetItemNumber(int32 Number);
 	void SetItem(AItem* NewItem);

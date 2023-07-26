@@ -56,7 +56,7 @@ public:
 	FORCEINLINE void SetItemNumber(const int32 Number) { ItemNumber = Number; }
 	FORCEINLINE void SetItemName(const FName Name) { ItemName = Name; }
 	FORCEINLINE UTexture2D* GetItemTexture()const { return ItemTexture; }
-	FORCEINLINE void SetItemTexture(UTexture2D* Tex) { ItemTexture = Tex; }
+	FORCEINLINE void SetItemTexture(UTexture2D* Tex) { if (Tex)ItemTexture = Tex; }
 	FORCEINLINE bool GetbIsStack()const { return bIsStack; }
 	FORCEINLINE FName GetItemName()const { return ItemName; }
 

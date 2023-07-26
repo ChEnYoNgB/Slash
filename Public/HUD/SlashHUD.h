@@ -29,4 +29,5 @@ public:
 	FORCEINLINE UKnapsackWidget* GetSlashKnapsack()const { return SlashKnapsack; }
 	void SetKnapsackVisibility(bool Visbility);
 	bool GetKnapsackVisibility();
+	void CreateKnapsackWidget();
 };

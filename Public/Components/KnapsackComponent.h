@@ -33,8 +33,8 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Knapsack")
 		TArray<AItem*> ItemArray;
-	UPROPERTY(VisibleAnywhere, Category = "Knapsack")
-		int32 MaxSize = 30;
+	UPROPERTY(EditAnywhere, Category = "Knapsack")
+		int32 MaxSize = 5;
 	UPROPERTY(VisibleAnywhere, Category = "Knapsack")
 		AItem* EmetyItem;
 	UPROPERTY(VisibleAnywhere, Category = "Knapsack")
@@ -43,4 +43,6 @@ private:
 		class APawn* PlayerCharacter;
 	UPROPERTY(VisibleAnywhere, Category = "Knapsack")
 		class AController* PlayerController;
+	UPROPERTY(EditAnywhere, Category = "Knapsack")
+		class UTexture2D* EmptyTexture;
 };

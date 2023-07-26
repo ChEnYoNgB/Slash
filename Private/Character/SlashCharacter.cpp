@@ -47,21 +47,20 @@ ASlashCharacter::ASlashCharacter()
 	ViewCamera->SetupAttachment(SpringArm);
 
 	KnapsackComponent = CreateDefaultSubobject<UKnapsackComponent>(TEXT("Knapsack"));
-	if (KnapsackComponent)
-	{
-		KnapsackComponent->InitKnapsack();
-	}
 
 }
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
+	UE_LOG(LogTemp, Warning, TEXT("ASlashCharacter"));
 	AttackSectionMax = AttackMontageSections.Num();
 	Tags.Add(FName("EngageableTarget"));
 	CharacterState = ECharacterState::ECS_Unequipped;
 	ActionState = EActionState::EAS_Unoccupied;
-
+	if (KnapsackComponent)
+	{
+		KnapsackComponent->InitKnapsack();
+	}
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
@@ -70,6 +69,7 @@ void ASlashCharacter::BeginPlay()
 		{
 			SlashOverlay = SlashHUD->GetSlashOverlay();
 			SlashOverlay->SetHealthPercent(Attribute->GetPercent());
+			SlashHUD->CreateKnapsackWidget();
 		}
 	}
 
@@ -96,7 +96,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ASlashCharacter::Attack);
 	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &ASlashCharacter::Dodge);
 	PlayerInputComponent->BindAction("OpenKnapsack", IE_Pressed, this, &ASlashCharacter::OpenKnapsack);
-
+	PlayerInputComponent->BindAction("Throw", IE_Pressed, this, &ASlashCharacter::Throw);
 }
 void ASlashCharacter::Jump()
 {
@@ -187,7 +187,7 @@ void ASlashCharacter::EKeyPressed()
 	if (OverlappingItem)
 	{
 		IPickupItemInterface* PickupItem = Cast<IPickupItemInterface>(OverlappingItem);
-		if (PickupItem)
+		if (PickupItem && KnapsackComponent)
 		{
 			NewItem = DuplicateObject<AItem>(OverlappingItem, NewItem);
 			KnapsackComponent->AddItem(NewItem);
@@ -351,16 +351,15 @@ void ASlashCharacter::OpenKnapsack()
 		bool Select = SlashHUD->GetKnapsackVisibility();
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		UWorld* World = GetWorld();
+		SlashHUD->SetKnapsackVisibility(!Select);
 		if (!Select)
 		{
 			if (PlayerController && World)
 			{
-				PlayerController->SetPause(true);
-
 				World->GetWorldSettings()->SetTimeDilation(0.f);
-
 				PlayerController->bShowMouseCursor = true;
 				PlayerController->bEnableMouseOverEvents = true;
+				PlayerController->SetInputMode(FInputModeGameAndUI());
 			}
 		}
 		else
@@ -370,11 +369,16 @@ void ASlashCharacter::OpenKnapsack()
 				World->GetWorldSettings()->SetTimeDilation(1.f);
 				PlayerController->bShowMouseCursor = false;
 				PlayerController->bEnableMouseOverEvents = false;
+				PlayerController->SetInputMode(FInputModeGameOnly());
 			}
-
 		}
-		SlashHUD->SetKnapsackVisibility(!Select);
-
-
+	}
+}
+void ASlashCharacter::Throw()
+{
+	if (KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
+	{
+		KnapsackComponent->RemoveItem(0, 1);
+		SlashHUD->GetSlashKnapsack()->UpdateList();
 	}
 }

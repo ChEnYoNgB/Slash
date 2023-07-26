@@ -7,26 +7,17 @@
 
 void ASlashHUD::BeginPlay()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ASlashHUD"));
 	Super::BeginPlay();
-
 	UWorld* World = GetWorld();
-
 	if (World)
 	{
 		APlayerController* Controller = World->GetFirstPlayerController();
 		if (Controller && SlashOverlayClass)
 		{
 			SlashOverlay = CreateWidget<USlashOverlay>(Controller, SlashOverlayClass);
-
 			SlashOverlay->AddToViewport();
 		}
-		if (Controller && SlashKnapsackClass)
-		{
-			SlashKnapsack = CreateWidget<UKnapsackWidget>(Controller, SlashKnapsackClass);
-			SlashKnapsack->AddToViewport();
-			SlashKnapsack->SetVisibility(ESlateVisibility::Hidden);
-		}
-
 	}
 }
 void ASlashHUD::SetKnapsackVisibility(bool Visbility)
@@ -49,4 +40,15 @@ bool ASlashHUD::GetKnapsackVisibility()
 		return true;
 	}
 	return false;
+}
+void ASlashHUD::CreateKnapsackWidget()
+{
+	UWorld* World = GetWorld();
+	APlayerController* Controller = World->GetFirstPlayerController();
+	if (World && Controller && SlashKnapsackClass)
+	{
+		SlashKnapsack = CreateWidget<UKnapsackWidget>(Controller, SlashKnapsackClass);
+		SlashKnapsack->AddToViewport();
+		SlashKnapsack->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

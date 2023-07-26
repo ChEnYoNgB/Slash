@@ -14,15 +14,15 @@ UKnapsackComponent::UKnapsackComponent()
 
 	EmetyItem = CreateDefaultSubobject<AItem>(TEXT("Empty"));
 	EmetyItem->SetItemName(FName(TEXT("EmptyItem")));
-	EmetyItem->SetItemTexture(nullptr);
+
 }
 
 
 
 void UKnapsackComponent::BeginPlay()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UKnapsackComponent"));
 	Super::BeginPlay();
-
 	if (GetOwner())
 	{
 		PlayerCharacter = Cast<APawn>(GetOwner());
@@ -31,7 +31,6 @@ void UKnapsackComponent::BeginPlay()
 	{
 		PlayerController = PlayerCharacter->GetController();
 	}
-
 }
 
 
@@ -45,6 +44,10 @@ void UKnapsackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UKnapsackComponent::InitKnapsack()
 {
+	if (EmptyTexture)
+	{
+		EmetyItem->SetItemTexture(EmptyTexture);
+	}
 	for (int32 i = 0; i < MaxSize; ++i)
 	{
 		ItemArray.Add(EmetyItem);
@@ -64,10 +67,11 @@ void UKnapsackComponent::AddItem(AItem* NewItem)
 			if (EmptyIndex == -1)
 			{
 				bIsFull = true;
-				UE_LOG(LogTemp, Warning, TEXT("Full"));
+				UE_LOG(LogTemp, Warning, TEXT("StackFull"));
 			}
 			else
 			{
+				bIsFull = false;
 				ItemArray[EmptyIndex] = NewItem;
 				ItemArray[EmptyIndex]->SetItemNumber(ItemArray[EmptyIndex]->GetItemNumber() + 1);
 			}
@@ -76,28 +80,6 @@ void UKnapsackComponent::AddItem(AItem* NewItem)
 		{
 			FindArray[0]->SetItemNumber(FindArray[0]->GetItemNumber() + 1);
 		}
-		//FindResult = ItemArray.Find(NewItem);
-		/*
-		if (FindResult == -1)
-		{
-			int32 EmptyIndex = ItemArray.Find(EmetyItem);
-			if (EmptyIndex == -1)
-			{
-				bIsFull = true;
-				UE_LOG(LogTemp, Warning, TEXT("Full"));
-			}
-			else
-			{
-				ItemArray[EmptyIndex] = NewItem;
-				ItemArray[EmptyIndex]->SetItemNumber(ItemArray[EmptyIndex]->GetItemNumber() + 1);
-			}
-
-		}
-		else
-		{
-			ItemArray[FindResult]->SetItemNumber(ItemArray[FindResult]->GetItemNumber() + 1);
-		}
-		*/
 	}
 	else
 	{
@@ -112,7 +94,6 @@ void UKnapsackComponent::AddItem(AItem* NewItem)
 			ItemArray[EmptyIndex] = NewItem;
 			ItemArray[EmptyIndex]->SetItemNumber(ItemArray[EmptyIndex]->GetItemNumber() + 1);
 		}
-
 	}
 }
 void UKnapsackComponent::RemoveItem(int32 Index, int32 Number)
@@ -132,6 +113,15 @@ void UKnapsackComponent::RemoveItem(int32 Index, int32 Number)
 		}
 		ThrowItem(throwItem);
 	}
+	int32 EmptyIndex = ItemArray.Find(EmetyItem);
+	if (EmptyIndex == -1)
+	{
+		bIsFull = true;
+	}
+	else
+	{
+		bIsFull = false;
+	}
 }
 void UKnapsackComponent::SwapItem(int32 Index1, int32 Index2)
 {
@@ -144,11 +134,11 @@ void UKnapsackComponent::ThrowItem(AItem* Item)
 	UWorld* World = GetWorld();
 	if (World && Item)
 	{
-		AItem* SpawnItem = World->SpawnActor<AItem>(Item->GetClass(), PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * 100.f, PlayerCharacter->GetActorRotation());
+		const float Length = FMath::RandRange(5.f, 10.f);
+		AItem* SpawnItem = World->SpawnActor<AItem>(Item->GetClass(), PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * 100.f + Length, PlayerCharacter->GetActorRotation());
 		if (SpawnItem)
 		{
 			SpawnItem = DuplicateObject<AItem>(Item, SpawnItem);
-			SpawnItem->GetStaticMesh()->SetPhysicsLinearVelocity(FVector(0.f, 0.f, 100.f));
 		}
 	}
 }

@@ -5,13 +5,17 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Items/Item.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/SlateWrapperTypes.h"
 void USlashItemSlot::NativePreConstruct()
 {
+	UE_LOG(LogTemp, Warning, TEXT("USlashItemSlot"));
 	Super::NativePreConstruct();
 	if (Item)
 	{
 		if (Item->GetItemName() == FName(TEXT("EmptyItem")))
 		{
+
 			SetItemNumber(0);
 		}
 		else
@@ -25,6 +29,18 @@ void USlashItemSlot::NativePreConstruct()
 
 		SetItemNumber(0);
 	}
+}
+FReply USlashItemSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (Item && Item->GetItemName() != FName(TEXT("EmptyItem")))
+	{
+		FEventReply EventReply;
+		EventReply = UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton);
+		UE_LOG(LogTemp, Warning, TEXT("1"));
+		return EventReply.NativeReply;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("2"));
+	return 	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 void USlashItemSlot::SetItemTexture(UTexture2D* Texture)
 {

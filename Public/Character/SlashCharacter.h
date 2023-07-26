@@ -77,6 +77,7 @@ private:
 	void Text();
 	void ResetAttack();
 	void OpenKnapsack();
+	void Throw();
 
 protected:
 

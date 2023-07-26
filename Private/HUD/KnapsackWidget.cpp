@@ -11,6 +11,7 @@
 
 void UKnapsackWidget::NativeConstruct()
 {
+	UE_LOG(LogTemp, Warning, TEXT("UKnapsackWidget"));
 	Super::NativeConstruct();
 	if (KnapsackComponentClass && GetOwningPlayerPawn())
 	{
@@ -30,12 +31,8 @@ void UKnapsackWidget::UpdateList()
 			USlashItemSlot* SlashItemSlot = CreateWidget<USlashItemSlot>(GetOwningPlayer(), ItemSlotClass);
 			if (SlashItemSlot)
 			{
-
 				SlashItemSlot->SetItem(Item);
-				if (Item->GetItemTexture())
-				{
-					SlashItemSlot->SetItemTexture(Item->GetItemTexture());
-				}
+				SlashItemSlot->SetItemTexture(Item->GetItemTexture());
 				SlashItemSlot->SetIndex(ItemArray.Find(Item));
 				SlashItemSlot->SetItemNumber(Item->GetItemNumber());
 				ItemList->AddChild(SlashItemSlot);
