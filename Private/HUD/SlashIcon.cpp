@@ -16,3 +16,10 @@ void USlashIcon::SetItem(AItem* NewItem)
 {
 	Item = NewItem;
 }
+void USlashIcon::SetTexture(UTexture2D* Texture)
+{
+	if (Texture)
+	{
+		IconTexture->SetBrushFromTexture(Texture);
+	}
+}

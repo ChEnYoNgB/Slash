@@ -111,7 +111,10 @@ void UKnapsackComponent::RemoveItem(int32 Index, int32 Number)
 		{
 			ItemArray[Index]->SetItemNumber(Result);
 		}
-		ThrowItem(throwItem);
+		for (int32 i = 0; i < Number; ++i)
+		{
+			ThrowItem(throwItem);
+		}
 	}
 	int32 EmptyIndex = ItemArray.Find(EmetyItem);
 	if (EmptyIndex == -1)
@@ -127,14 +130,14 @@ void UKnapsackComponent::SwapItem(int32 Index1, int32 Index2)
 {
 	if (Index1 >= MaxSize || Index1 < 0 || Index2 >= MaxSize || Index2 < 0)return;
 	ItemArray.Swap(Index1, Index2);
+	UE_LOG(LogTemp, Warning, TEXT("True Exchange"));
 }
-
 void UKnapsackComponent::ThrowItem(AItem* Item)
 {
 	UWorld* World = GetWorld();
 	if (World && Item)
 	{
-		const float Length = FMath::RandRange(5.f, 10.f);
+		const float Length = FMath::RandRange(-10.f, 15.f);
 		AItem* SpawnItem = World->SpawnActor<AItem>(Item->GetClass(), PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * 100.f + Length, PlayerCharacter->GetActorRotation());
 		if (SpawnItem)
 		{

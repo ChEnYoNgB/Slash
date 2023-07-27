@@ -77,8 +77,8 @@ private:
 	void Text();
 	void ResetAttack();
 	void OpenKnapsack();
-	void Throw();
-
+	void ThrowAll();
+	void ThrowOne();
 protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Knapsack")

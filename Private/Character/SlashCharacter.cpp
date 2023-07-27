@@ -96,7 +96,8 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ASlashCharacter::Attack);
 	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &ASlashCharacter::Dodge);
 	PlayerInputComponent->BindAction("OpenKnapsack", IE_Pressed, this, &ASlashCharacter::OpenKnapsack);
-	PlayerInputComponent->BindAction("Throw", IE_Pressed, this, &ASlashCharacter::Throw);
+	PlayerInputComponent->BindAction("Throw", IE_Pressed, this, &ASlashCharacter::ThrowAll);
+	PlayerInputComponent->BindAction("Throw", IE_Released, this, &ASlashCharacter::ThrowOne);
 }
 void ASlashCharacter::Jump()
 {
@@ -166,15 +167,22 @@ void ASlashCharacter::EKeyPressed()
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
 		CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
 		EquippedWeapon = OverlappingWeapon;
+		if (KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
+		{
+			KnapsackComponent->AddItem(OverlappingWeapon);
+			SlashHUD->GetSlashKnapsack()->UpdateList();
+		}
+
 	}
 	else
 	{
 
-		if (CharacterState != ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied && EquipMontage)
+		if (CharacterState != ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied && EquipMontage && EquippedWeapon)
 		{
 			PlayEquipMontage(FName("Unequip"));
 			CharacterState = ECharacterState::ECS_Unequipped;
 			ActionState = EActionState::EAS_EquippingWeapon;
+			EquippedWeapon->SetItemInpackage();
 			CombatTarget = nullptr;
 		}
 		else if (CharacterState == ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied && EquipMontage && EquippedWeapon)
@@ -182,12 +190,13 @@ void ASlashCharacter::EKeyPressed()
 			PlayEquipMontage(FName("Equip"));
 			CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
 			ActionState = EActionState::EAS_EquippingWeapon;
+			EquippedWeapon->SetItemEquip();
 		}
 	}
 	if (OverlappingItem)
 	{
 		IPickupItemInterface* PickupItem = Cast<IPickupItemInterface>(OverlappingItem);
-		if (PickupItem && KnapsackComponent)
+		if (PickupItem && KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
 		{
 			NewItem = DuplicateObject<AItem>(OverlappingItem, NewItem);
 			KnapsackComponent->AddItem(NewItem);
@@ -374,11 +383,17 @@ void ASlashCharacter::OpenKnapsack()
 		}
 	}
 }
-void ASlashCharacter::Throw()
+void ASlashCharacter::ThrowAll()
 {
-	if (KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
+	if (KnapsackComponent)
 	{
-		KnapsackComponent->RemoveItem(0, 1);
-		SlashHUD->GetSlashKnapsack()->UpdateList();
+		KnapsackComponent->SetIsThrowAll(true);
+	}
+}
+void ASlashCharacter::ThrowOne()
+{
+	if (KnapsackComponent)
+	{
+		KnapsackComponent->SetIsThrowAll(false);
 	}
 }

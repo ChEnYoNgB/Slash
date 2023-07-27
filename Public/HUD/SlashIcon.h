@@ -17,6 +17,7 @@ class SLASH_API USlashIcon : public UUserWidget
 public:
 	virtual void NativePreConstruct()override;
 	void SetItem(AItem* NewItem);
+	void SetTexture(class UTexture2D* Texture);
 private:
 	UPROPERTY(meta = (BindWidget))
 		UImage* IconTexture;

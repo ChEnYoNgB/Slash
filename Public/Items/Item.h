@@ -16,7 +16,8 @@ class UTexture2D;
 enum class EItemState :uint8
 {
 	EIS_Hovering,
-	EIS_Equipped
+	EIS_Equipped,
+	EIS_Inpackage
 };
 
 UCLASS()
@@ -50,6 +51,9 @@ protected:
 	EItemState ItemState = EItemState::EIS_Hovering;
 public:
 	virtual void Tick(float DeltaTime) override;
+	FORCEINLINE bool CanThrow()const { return ItemState != EItemState::EIS_Equipped; }
+	FORCEINLINE void SetItemEquip() { ItemState = EItemState::EIS_Equipped; }
+	FORCEINLINE void SetItemInpackage() { ItemState = EItemState::EIS_Inpackage; }
 	FORCEINLINE UStaticMeshComponent* GetStaticMesh()const { return ItemMesh; }
 	FORCEINLINE void SetStaticMesh(UStaticMeshComponent* NewMesh) { ItemMesh = NewMesh; }
 	FORCEINLINE int32 GetItemNumber()const { return ItemNumber; }

@@ -18,6 +18,7 @@ class SLASH_API UKnapsackWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	virtual void NativeConstruct()override;
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)override;
 	void UpdateList();
 protected:
 	UPROPERTY(EditAnywhere)
