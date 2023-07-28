@@ -160,23 +160,61 @@ void ASlashCharacter::LookUp(float Value)
 }
 void ASlashCharacter::EKeyPressed()
 {
-
-	AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem);
-	if (OverlappingWeapon)
+	if (OverlappingItem.Num() > 0)
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-		CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
-		EquippedWeapon = OverlappingWeapon;
-		if (KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
+		if (KnapsackComponent && KnapsackComponent->GetIsFull())return;
+		TArray<AItem*> RemoveItem;
+		for (int32 index = OverlappingItem.Num() - 1; index >= 0; --index)
 		{
-			KnapsackComponent->AddItem(OverlappingWeapon);
-			SlashHUD->GetSlashKnapsack()->UpdateList();
-		}
+			AItem* Item = OverlappingItem[index];
+			AWeapon* OverlappingWeapon = Cast<AWeapon>(Item);
+			if (OverlappingWeapon)
+			{
+				OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+				CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
+				EquippedWeapon = OverlappingWeapon;
+				if (KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
+				{
+					KnapsackComponent->AddItem(OverlappingWeapon);
+					SlashHUD->GetSlashKnapsack()->UpdateList();
+					RemoveItem.AddUnique(Item);
+				}
+				if (KnapsackComponent && KnapsackComponent->GetIsFull())
+				{
+					break;
+				}
+				else
+				{
+					continue;
+				}
 
+			}
+			if (Item)
+			{
+				IPickupItemInterface* PickupItem = Cast<IPickupItemInterface>(Item);
+				if (PickupItem && KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
+				{
+					NewItem = DuplicateObject<AItem>(Item, NewItem);
+					KnapsackComponent->AddItem(NewItem);
+					SlashHUD->GetSlashKnapsack()->UpdateList();
+					PickupItem->PickUp();
+					NewItem = nullptr;
+					RemoveItem.AddUnique(Item);
+				}
+				if (KnapsackComponent && KnapsackComponent->GetIsFull())
+				{
+					break;
+				}
+			}
+		}
+		for (auto item : RemoveItem)
+		{
+			OverlappingItem.Remove(item);
+		}
+		RemoveItem.Empty();
 	}
 	else
 	{
-
 		if (CharacterState != ECharacterState::ECS_Unequipped && ActionState == EActionState::EAS_Unoccupied && EquipMontage && EquippedWeapon)
 		{
 			PlayEquipMontage(FName("Unequip"));
@@ -191,18 +229,6 @@ void ASlashCharacter::EKeyPressed()
 			CharacterState = ECharacterState::ECS_EquippedOneHandWeapon;
 			ActionState = EActionState::EAS_EquippingWeapon;
 			EquippedWeapon->SetItemEquip();
-		}
-	}
-	if (OverlappingItem)
-	{
-		IPickupItemInterface* PickupItem = Cast<IPickupItemInterface>(OverlappingItem);
-		if (PickupItem && KnapsackComponent && SlashHUD && SlashHUD->GetSlashKnapsack())
-		{
-			NewItem = DuplicateObject<AItem>(OverlappingItem, NewItem);
-			KnapsackComponent->AddItem(NewItem);
-			SlashHUD->GetSlashKnapsack()->UpdateList();
-			PickupItem->PickUp();
-			NewItem = nullptr;
 		}
 	}
 }
@@ -351,7 +377,19 @@ void ASlashCharacter::AddSouls(ASoul* Soul)
 }
 void ASlashCharacter::SetOverlappingItem(AItem* Item)
 {
-	OverlappingItem = Item;
+	if (Item)
+	{
+		OverlappingItem.AddUnique(Item);
+	}
+
+}
+void ASlashCharacter::RemoveOverlappingItem(AItem* Item)
+{
+	if (Item)
+	{
+		OverlappingItem.Remove(Item);
+
+	}
 }
 void ASlashCharacter::OpenKnapsack()
 {

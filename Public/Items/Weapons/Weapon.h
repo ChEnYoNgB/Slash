@@ -26,6 +26,7 @@ public:
 	AWeapon();
 	void Equip(USceneComponent* InParent, FName SocketName, AActor* NewOwner, APawn* NewInstigator);
 	void AttachToSocket(USceneComponent* InParent, const FName& SocketName);
+	void DetachToSocket();
 	FORCEINLINE UBoxComponent* GetWeaponBox()const { return WeaponBox; }
 	FORCEINLINE AActor* GetHitCharacter()const { return HitCharacter; }
 	TArray<AActor*> IgnoreActors;

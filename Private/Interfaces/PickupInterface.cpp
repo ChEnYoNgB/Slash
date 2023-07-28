@@ -8,6 +8,10 @@ void IPickupInterface::SetOverlappingItem(AItem* Item)
 {
 
 }
+void IPickupInterface::RemoveOverlappingItem(AItem* Item)
+{
+
+}
 void IPickupInterface::AddSouls(ASoul* Soul)
 {
 

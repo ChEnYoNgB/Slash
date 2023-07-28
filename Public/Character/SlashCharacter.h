@@ -31,6 +31,7 @@ public:
 	virtual void GetHit_Implementation(const FVector& ImpatPoint, AActor* Hitter)override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)override;
 	virtual void SetOverlappingItem(AItem* Item)override;
+	virtual void RemoveOverlappingItem(AItem* Item)override;
 	virtual void AddSouls(ASoul* Soul) override;
 
 
@@ -65,7 +66,7 @@ private:
 	UPROPERTY()
 		USlashOverlay* SlashOverlay;
 	UPROPERTY(VisibleInstanceOnly, Category = "Overlap")
-		AItem* OverlappingItem;
+		TArray<AItem*> OverlappingItem;
 
 
 	void MoveForward(float Value);

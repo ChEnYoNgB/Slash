@@ -54,6 +54,7 @@ public:
 	FORCEINLINE bool CanThrow()const { return ItemState != EItemState::EIS_Equipped; }
 	FORCEINLINE void SetItemEquip() { ItemState = EItemState::EIS_Equipped; }
 	FORCEINLINE void SetItemInpackage() { ItemState = EItemState::EIS_Inpackage; }
+	FORCEINLINE void SetItemHovering() { ItemState = EItemState::EIS_Hovering; }
 	FORCEINLINE UStaticMeshComponent* GetStaticMesh()const { return ItemMesh; }
 	FORCEINLINE void SetStaticMesh(UStaticMeshComponent* NewMesh) { ItemMesh = NewMesh; }
 	FORCEINLINE int32 GetItemNumber()const { return ItemNumber; }

@@ -30,7 +30,9 @@ public:
 	void SwapItem(int32 Index1, int32 Index2);
 	void ThrowItem(AItem* Item);
 	FORCEINLINE bool GetIsThrowAll()const { return bIsThrowAll; }
+	FORCEINLINE bool GetIsFull()const { return bIsFull; }
 	FORCEINLINE void SetIsThrowAll(bool Value) { bIsThrowAll = Value; }
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Knapsack")
 		TArray<AItem*> ItemArray;

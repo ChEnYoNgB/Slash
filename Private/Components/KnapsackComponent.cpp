@@ -3,6 +3,7 @@
 
 #include "Components/KnapsackComponent.h"
 #include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
 #include "GameFramework/Pawn.h"
 #include "Engine/Texture2D.h"
 #include "UObject/UObjectGlobals.h"
@@ -95,6 +96,15 @@ void UKnapsackComponent::AddItem(AItem* NewItem)
 			ItemArray[EmptyIndex]->SetItemNumber(ItemArray[EmptyIndex]->GetItemNumber() + 1);
 		}
 	}
+	int32 EmptyIndex = ItemArray.Find(EmetyItem);
+	if (EmptyIndex == -1)
+	{
+		bIsFull = true;
+	}
+	else
+	{
+		bIsFull = false;
+	}
 }
 void UKnapsackComponent::RemoveItem(int32 Index, int32 Number)
 {
@@ -103,6 +113,8 @@ void UKnapsackComponent::RemoveItem(int32 Index, int32 Number)
 	{
 		const int32 Result = ItemArray[Index]->GetItemNumber() - Number;
 		AItem* throwItem = ItemArray[Index];
+		AWeapon* Weapon = Cast<AWeapon>(throwItem);
+		if (Weapon && !Weapon->CanThrow())return;
 		if (Result <= 0)
 		{
 			ItemArray[Index] = EmetyItem;
@@ -138,10 +150,30 @@ void UKnapsackComponent::ThrowItem(AItem* Item)
 	if (World && Item)
 	{
 		const float Length = FMath::RandRange(-10.f, 15.f);
-		AItem* SpawnItem = World->SpawnActor<AItem>(Item->GetClass(), PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * 100.f + Length, PlayerCharacter->GetActorRotation());
+		FVector SpawnLocation = PlayerCharacter->GetActorLocation() + PlayerCharacter->GetActorForwardVector() * 100.f + Length;
+		FRotator SpawnRotation = PlayerCharacter->GetActorRotation();
+		AWeapon* Weapon = Cast<AWeapon>(Item);
+		if (Weapon)
+		{
+			if (Weapon->CanThrow())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Throw a weapon"));
+				Weapon->DetachToSocket();
+				Weapon->SetActorLocation(SpawnLocation);
+				Weapon->SetActorRotation(SpawnRotation);
+				Weapon->SetItemHovering();
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Weapon is Equipping, Can't throw!"));
+			}
+			return;
+		}
+		AItem* SpawnItem = World->SpawnActor<AItem>(Item->GetClass(), SpawnLocation, SpawnRotation);
 		if (SpawnItem)
 		{
 			SpawnItem = DuplicateObject<AItem>(Item, SpawnItem);
+			SpawnItem->SetItemNumber(0);
 		}
 	}
 }

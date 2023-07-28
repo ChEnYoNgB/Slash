@@ -116,3 +116,19 @@ void AWeapon::AttachToSocket(USceneComponent* InParent, const FName& SocketName)
 	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 	ItemMesh->AttachToComponent(InParent, TransformRules, SocketName);
 }
+void AWeapon::DetachToSocket()
+{
+	USceneComponent* Parent = ItemMesh->GetAttachParent();
+	if (Parent)
+	{
+		ItemMesh->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	}
+	if (Sphere)
+	{
+		Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	if (ItemEffect)
+	{
+		ItemEffect->Activate();
+	}
+}

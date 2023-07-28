@@ -9,7 +9,6 @@
 #include "Components/KnapsackComponent.h"
 #include "GameFramework/Pawn.h"
 #include "HUD/SlashIconDragDrop.h"
-#include "Items/Weapons/Weapon.h"
 
 void UKnapsackWidget::NativeConstruct()
 {
@@ -28,28 +27,12 @@ bool UKnapsackWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropE
 	if (KnapsackComponent)
 	{
 		USlashItemSlot* ItemSlot = Cast<USlashItemSlot>(InOperation->Payload);
-		AWeapon* Weapon = Cast<AWeapon>(ItemSlot->GetItem());
-		if (Weapon)
-		{
-			if (Weapon->CanThrow())
-			{
-				//TODO:Throw a weapon
-				UE_LOG(LogTemp, Warning, TEXT("Throw a weapon"));
-				return true;
-			}
-			else
-			{
-				return true;
-			}
-		}
 		if (ItemSlot)
 		{
-
 			const int32 Index = ItemSlot->GetIndex();
 			KnapsackComponent->RemoveItem(Index, ItemSlot->GetThrowNumber());
 			UpdateList();
 		}
-
 	}
 	return true;
 }

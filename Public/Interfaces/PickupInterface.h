@@ -23,6 +23,7 @@ class SLASH_API IPickupInterface
 
 public:
 	virtual void SetOverlappingItem(class AItem* Item);
+	virtual void RemoveOverlappingItem(AItem* Item);
 	virtual void AddSouls(class ASoul* Soul);
 protected:
 

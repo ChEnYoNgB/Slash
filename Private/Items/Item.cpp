@@ -62,7 +62,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor*
 	IPickupInterface* PickupInterface = Cast<IPickupInterface>(OtherActor);
 	if (PickupInterface)
 	{
-		PickupInterface->SetOverlappingItem(nullptr);
+		PickupInterface->RemoveOverlappingItem(this);
 	}
 }
 void AItem::SpawnPickUpEffect()
